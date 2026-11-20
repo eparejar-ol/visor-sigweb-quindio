@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visor SIG Web - Monitoreo Ambiental del Quindío</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-brand">
+            <i class="fa-solid fa-map-location-dot logo-icon"></i>
+            <div>
+                <h1>Visor SIG Web Ambiental del Quindío</h1>
+                <span class="subtitle">Programación para SIG | Universidad del Quindío</span>
+            </div>
+        </div>
+        <div class="navbar-tags">
+            <span class="badge badge-postgis"><i class="fa-solid fa-database"></i> PostgreSQL/PostGIS</span>
+            <span class="badge badge-fastapi"><i class="fa-solid fa-bolt"></i> Python FastAPI</span>
+            <span class="badge badge-leaflet"><i class="fa-solid fa-layer-group"></i> Leaflet.js</span>
+        </div>
+    </header>
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="api-status-card" id="apiStatusCard">
+                <i class="fa-solid fa-signal icon-status"></i>
+                <span id="apiStatusText">Estado API: Servidor Local FastAPI (Uvicorn:8000)</span>
+            </div>
+            <section class="card">
+                <h2><i class="fa-solid fa-layer-group"></i> 1. Capas Espaciales (F1)</h2>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="chkMunicipios" checked>
+                        <span><i class="fa-solid fa-draw-polygon color-poly"></i> Municipios del Quindío</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="chkEstaciones" checked>
+                        <span><i class="fa-solid fa-location-dot color-point"></i> Estaciones de Monitoreo</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="selectTipoEstacion">Filtrar por Tipo de Estación:</label>
+                    <select id="selectTipoEstacion" class="form-control">
+                        <option value="">Todas las estaciones</option>
+                        <option value="Meteorológica">Meteorológica</option>
+                        <option value="Hidrométrica">Hidrométrica</option>
+                        <option value="Calidad del Aire">Calidad del Aire</option>
+                        <option value="Agrometeorológica">Agrometeorológica</option>
+                    </select>
+                </div>
+            </section>
+            <section class="card">
+                <h2><i class="fa-solid fa-compass-drafting"></i> 2. Consulta Espacial PostGIS (F3)</h2>
+                <p class="section-desc">Encuentra estaciones con <code>ST_DWithin()</code> alrededor de un punto.</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="inputLat">Latitud (°):</label>
+                        <input type="number" id="inputLat" class="form-control" step="0.0001" value="4.5539">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputLon">Longitud (°):</label>
+                        <input type="number" id="inputLon" class="form-control" step="0.0001" value="-75.6603">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputRadio">Radio de Búsqueda (km):</label>
+                    <input type="number" id="inputRadio" class="form-control" min="1" max="50" value="10">
+                </div>
+                <button id="btnConsultaEspacial" class="btn btn-primary">
+                    <i class="fa-solid fa-bullseye"></i> Ejecutar ST_DWithin()
+                </button>
+                <button id="btnLimpiarEspacial" class="btn btn-secondary" style="margin-top: 5px;">
+                    <i class="fa-solid fa-rotate-left"></i> Limpiar Búsqueda
+                </button>
+                <small class="help-text"><i class="fa-solid fa-hand-pointer"></i> Haz clic en el mapa para capturar coordenadas.</small>
+            </section>
+            <section class="card">
+                <h2><i class="fa-solid fa-chart-pie"></i> 3. Análisis Temático y Alertas (F4)</h2>
+                <div class="form-group">
+                    <label for="selectAlerta">Filtrar por Nivel de Alerta:</label>
+                    <select id="selectAlerta" class="form-control">
+                        <option value="">Todas las alertas</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Preventivo">Preventivo</option>
+                        <option value="Crítico">Crítico</option>
+                    </select>
+                </div>
+                <button id="btnCargarResumen" class="btn btn-success">
+                    <i class="fa-solid fa-table"></i> Resumen Municipal
+                </button>
+                <div id="contenedorResumen" class="table-responsive" style="margin-top: 10px;"></div>
+            </section>
+            <section class="card">
+                <h2><i class="fa-solid fa-circle-info"></i> 4. Detalle de Estación (F2)</h2>
+                <div id="panelDetalle" class="detail-box">
+                    <p class="placeholder-text"><i class="fa-solid fa-arrow-pointer"></i> Haz clic en una estación para ver su información alfanumérica desde PostGIS.</p>
+                </div>
+            </section>
+        </aside>
+        <main class="map-container">
+            <div id="map"></div>
+        </main>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
